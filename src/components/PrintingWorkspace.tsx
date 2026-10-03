@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { CardResolution, DeckCard, PrintingVariant, PrintingSelection } from '../types/card';
 import PrintingSelector from './PrintingSelector';
+import { generatePrintEntries, getPrintSummary } from '../utils/printDataGenerator';
 import './PrintingWorkspace.css';
 
 interface PrintingWorkspaceProps {
@@ -107,7 +108,11 @@ function PrintingWorkspace({ resolvedCards, deckName, onBack, selectionsCache }:
       <div className="workspace-footer">
         <div className="footer-content">
           <p className="selection-summary">
-            Selections cached for this session · Ready to proceed to printing
+            {(() => {
+              const entries = generatePrintEntries(deckCards);
+              const summary = getPrintSummary(entries);
+              return `${summary.uniqueCards} unique cards · ${summary.totalImages} total images to print`;
+            })()}
           </p>
           <button className="next-button">
             Continue to Printing →

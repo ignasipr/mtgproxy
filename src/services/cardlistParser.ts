@@ -38,11 +38,12 @@ export function parseCardlist(input: string): ParsedCard[] {
     }
 
     // Try to match: quantity + space + card name [+ (set code) collector_number [+ variant]]
+    // Using [^(]+ instead of .+? to prevent matching opening paren in card name
     // Examples:
     // "1 Sol Ring"
     // "1 Tifa Lockhart (FIN) 206"
     // "1 Harrow (EOC) 98-EASD"
-    const match = trimmed.match(/^(\d+)\s+(.+?)(?:\s*\(([A-Z0-9]{2,4})\)\s*(\d+)(?:-(\S+))?)?$/);
+    const match = trimmed.match(/^(\d+)\s+([^(]+?)(?:\s*\(([A-Z0-9]{2,4})\)\s*(\d+)(?:-(\S+))?)?$/);
 
     if (match) {
       const quantity = parseInt(match[1], 10);
@@ -63,7 +64,7 @@ export function parseCardlist(input: string): ParsedCard[] {
     } else {
       // Treat entire line as card name with quantity 1
       // Check if it has set info anyway
-      const simpleMatch = trimmed.match(/^(.+?)(?:\s*\(([A-Z0-9]{2,4})\)\s*(\d+)(?:-(\S+))?)?$/);
+      const simpleMatch = trimmed.match(/^([^(]+?)(?:\s*\(([A-Z0-9]{2,4})\)\s*(\d+)(?:-(\S+))?)?$/);
       
       if (simpleMatch && !trimmed.match(/^\d+\s/)) {
         // Line without quantity prefix

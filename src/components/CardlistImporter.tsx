@@ -1,13 +1,12 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { parseCardlist } from '../services/cardlistParser';
 import { searchCardExact, searchCard } from '../services/mtgApi';
-import type { CardResolution, Deck, PrintingSelection } from '../types/card'
+import type { CardResolution, Deck } from '../types/card'
 import CardImportResults from './CardImportResults';
-import PrintingWorkspace from './PrintingWorkspace'
 import { Loader } from './Loader'
 import './CardlistImporter.css'
 
-type Screen = 'import' | 'results' | 'workspace'
+type Screen = 'import' | 'results'
 
 function CardlistImporter() {
   const [input, setInput] = useState('')
@@ -16,8 +15,6 @@ function CardlistImporter() {
   const [error, setError] = useState('')
   const [screen, setScreen] = useState<Screen>('import')
   const [progress, setProgress] = useState({ current: 0, total: 0 })
-  // Session-level cache for printing selections
-  const selectionsCache = useRef<Map<string, PrintingSelection>>(new Map())
 
   const handleImport = async () => {
     if (!input.trim()) {
@@ -104,28 +101,11 @@ function CardlistImporter() {
     setScreen('import')
   }
 
-  const handleProceedToWorkspace = (workingDeck: Deck) => {
-    setDeck(workingDeck)
-    setScreen('workspace')
-  }
-
-  if (screen === 'workspace' && deck) {
-    return (
-      <PrintingWorkspace
-        resolvedCards={deck.cards}
-        deckName={deck.name}
-        onBack={() => setScreen('results')}
-        selectionsCache={selectionsCache.current}
-      />
-    )
-  }
-
   if (screen === 'results' && deck) {
     return (
       <CardImportResults
         deck={deck}
         onReset={handleClear}
-        onProceed={handleProceedToWorkspace}
       />
     )
   }

@@ -3,13 +3,23 @@ import './CardRow.css';
 
 interface CardRowProps {
   cardResolution: CardResolution;
+  onCardClick?: (card: CardResolution) => void;
 }
 
-function CardRow({ cardResolution }: CardRowProps) {
+function CardRow({ cardResolution, onCardClick }: CardRowProps) {
   const { originalName, quantity, resolved, card, error } = cardResolution;
 
+  const handleClick = () => {
+    if (resolved && card && onCardClick) {
+      onCardClick(cardResolution);
+    }
+  };
+
   return (
-    <div className={`card-row ${resolved ? 'resolved' : 'unresolved'}`}>
+    <div 
+      className={`card-row ${resolved ? 'resolved' : 'unresolved'} ${resolved ? 'clickable' : ''}`}
+      onClick={handleClick}
+    >
       <div className="card-image-container">
         {card?.imageUrl ? (
           <img
